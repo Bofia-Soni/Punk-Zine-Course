@@ -1,1 +1,6 @@
 notes HERE
+
+- is there unneccesary js that we can delete 
+- items are not cliclable anymore once other item is clicked 
+- also faces just one appears
+- stable move (rotate, scale) logic
