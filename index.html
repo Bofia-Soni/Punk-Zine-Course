@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PUNK ZINATOR</title>
+        <link rel="icon" type="image/png" href="img/star.PNG">
+        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="style.css">
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Beth+Ellen&family=Borel&family=Caveat:wght@400..700&family=Homemade+Apple&family=Miniver&family=Playwrite+HR:wght@100..400&family=Playwrite+NO+Guides&family=Playwrite+VN+Guides&family=Rock+Salt&display=swap');
+
+
+            a:hover {cursor: pointer;
+            }
+
+        @font-face {
+            font-family: 'Mess_Light';
+            src: url('Mess-Light_web.eot');
+            src: url('Mess-Light_web.eot?#iefix') format('embedded-opentype'),
+            url(SOURCES/Mess-Light_web.woff) format('woff'),
+            url(SOURCES/Mess-Light_web.woff2) format('woff2'),
+            url(SOURCES/Mess-Light_web.ttf) format('truetype'),
+            url('Mess-Light_web.svg#svgFontName') format('svg');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+        font-family: 'MagazineLetterByBrntlbrnl-Regular';
+        src: url(SOURCES/MagazineLetterByBrntlbrnl-Regular.ttf);
+        }
+        </style>
+    </head>
+    <body>
+        
+        <div class="titlewrap">
+                <h1  id="title">The Ultimate PunkZineator</h1>
+                <img id="titlehover" src="SOURCES/img/title.PNG">
+        </div>
+
+        <div id="categoryList">
+                
+                <p class="category" id="maximalist">Maximalist but functional layouts</p>           
+                    <div id="overlay_maximalist"> <!-- Overlay (inizialmente nascosto) -->
+                        <div class="gallery">
+                            <img src="SOURCES/tabs/tabs_maximalist_1.png" class="1" id="maximalist1" alt="wait a minute">
+                            <img src="SOURCES/tabs/tabs_maximalist_2.png" class="2" id="maximalist2" alt="hehe">
+                            <img src="SOURCES/tabs/tabs_maximalist_3.png" class="3" id="maximalist3" alt="just wait">
+                            <img src="SOURCES/tabs/tabs_maximalist_4.png" class="4" id="maximalist4" alt="loading...">
+                        </div>
+                    </div>
+                <p class="category" id="papers">Different papers and different sizes</p>
+                    <div id="overlay_papers"> <!-- Overlay (inizialmente nascosto) -->
+                        <div class="gallery">
+                            <img src="SOURCES/tabs/tabs_papers_1.png" class="1" id="papers1" alt="wait a minute">
+                            <img src="SOURCES/tabs/tabs_papers_2.png" class="2" id="papers2" alt="hehe">
+                            <img src="SOURCES/tabs/tabs_papers_3.png" class="3" id="papers3" alt="just wait">
+                            <img src="SOURCES/tabs/tabs_papers_4.png" class="4" id="papers4" alt="loading...">
+                        </div>
+                    </div>                                
+                <p class="category" id="icons">Ordinary culture icons modified</p>
+                    <div id="overlay_icons"> 
+                        <div class="gallery">
+                            <img src="SOURCES/tabs/tabs_icons_1.png" class="1" id="icons1" alt="wait a minute">
+                            <img src="SOURCES/tabs/tabs_icons_2.png" class="2" id="icons2" alt="hehe">
+                            <img src="SOURCES/tabs/tabs_icons_3.png" class="3" id="icons3" alt="just wait">
+                            <img src="SOURCES/tabs/tabs_icons_4.png" class="4" id="icons4" alt="loading...">
+                        </div>
+                    </div>
+                    <div id="faces">
+                        <div class="cutouts">
+                            <img src="SOURCES/faces/gagarin.PNG" id="gagarin">
+                            <img src="SOURCES/faces/gagarin1.PNG" id="gagarin1">
+                            <img src="SOURCES/faces/gagarin2.PNG" id="gagarin2">
+
+                            <img src="SOURCES/faces/madonna.PNG" id="madonna">
+                        </div>
+                    </div>  
+                <p class="category" id="drawings">Hand drawings</p>
+                    <div id="overlay_drawings"> 
+                        <div class="gallery">
+                            <img src="SOURCES/tabs/tabs_drawings_1.png" class="1" id="drawings1" alt="wait a minute">
+                            <img src="SOURCES/tabs/tabs_drawings_2.png" class="2" id="drawings2" alt="hehe">
+                            <img src="SOURCES/tabs/tabs_drawings_3.png" class="3" id="drawings3" alt="just wait">
+                            <img src="SOURCES/tabs/tabs_drawings_4.png" class="4" id="drawings4" alt="loading...">
+                        </div>
+                    </div> 
+                <p class="category" id="ornaments">Ornaments</p>
+                    <div id="overlay_ornaments"> 
+                        <div class="gallery">
+                            <img src="SOURCES/tabs/tabs_ornaments_1.png" class="1" id="ornaments1" alt="wait a minute">
+                            <img src="SOURCES/tabs/tabs_ornaments_2.png" class="2" id="ornaments2" alt="hehe">
+                            <img src="SOURCES/tabs/tabs_ornaments_3.png" class="3" id="ornaments3" alt="just wait">
+                            <img src="SOURCES/tabs/tabs_ornaments_4.png" class="4" id="ornaments4" alt="loading...">
+                        </div>
+                    </div> 
+                <p class="category" id="collages">Collages and cutouts</p>
+                    <div id="overlay_collages"> 
+                        <div class="gallery">
+                            <img src="SOURCES/tabs/tabs_collages_1.png" class="1" id="collages1" alt="wait a minute">
+                            <img src="SOURCES/tabs/tabs_collages_2.png" class="2" id="collages2" alt="hehe">
+                            <img src="SOURCES/tabs/tabs_collages_3.png" class="3" id="collages3" alt="just wait">
+                            <img src="SOURCES/tabs/tabs_collages_4.png" class="4" id="collages4" alt="loading...">
+                        </div>
+                    </div> 
+                <p class="category" id="illegible">Illegible pages</p>
+                    <div id="overlay_illegible"> 
+                        <div class="gallery">
+                            <img src="SOURCES/tabs/tabs_illegible_1.png" class="1" id="illegible1" alt="wait a minute">
+                            <img src="SOURCES/tabs/tabs_illegible_2.png" class="2" id="illegible2" alt="hehe">
+                            <img src="SOURCES/tabs/tabs_illegible_3.png" class="3" id="illegible3" alt="just wait">
+                            <img src="SOURCES/tabs/tabs_illegible_4.png" class="4" id="illegible4" alt="loading...">
+                        </div>
+                    </div> 
+                <p class="category" id="browsing">Hard browsing experience</p>
+                    <div id="overlay_browsing"> 
+                        <div class="gallery">
+                            <img src="SOURCES/tabs/tabs_browsing_1.png" class="1" id="browsing1" alt="wait a minute">
+                            <img src="SOURCES/tabs/tabs_browsing_2.png" class="2" id="browsing2" alt="hehe">
+                            <img src="SOURCES/tabs/tabs_browsing_3.png" class="3" id="browsing3" alt="just wait">
+                            <img src="SOURCES/tabs/tabs_browsing_4.png" class="4" id="browsing4" alt="loading...">
+                        </div>
+                    </div> 
+
+                   <br> <br> <br>
+
+        
+
+                <footer style="font-family:MSCHFSansMono,monospace,Arial,Helvetica,sans-serif;">Tool developed by Sofia Boni | <br> Website as punk zines course by Inza & hjordis | <br> 2025 Bauhaus Universitat Weimar</footer>
+                <button id="Download">Download</button>
+                <button id="reset">Reset</button>
+        </div>
+        
+        <div id="download_area">download area
+        </div>
+
+    
+    <script src="script.js"></script>
+    <script src="tabsActivation.js"></script>
+    
+    </body>
+    
+</html>
+
+
+
+
+
+ 
