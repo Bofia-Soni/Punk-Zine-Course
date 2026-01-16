@@ -3,8 +3,9 @@
     <head>
                 <title>PUNK ZINATOR</title>
 
+
     </head>
-<body style="text-align:center;">
+<body style="text-align:center; background-color: brown; ">
 
     <h3>
         Click on button to change the 
@@ -18,10 +19,14 @@
        <div onclick="redcolor()">
 background    </div>
 
+<div onclick="myFunc()"> second yellow button</div>
+
 
     <script>
         function myFunc() {
             document.body.style.background = 'yellow';
+            document.body.style.fontFamily = 'fantasy';
+            document.body.style.fontSize = '3em'
         }   
         
         function redcolor() {
