@@ -5,34 +5,24 @@
 
 
     </head>
-<body style="text-align:center; background-color: brown; ">
 
-    <h3>
-        Click on button to change the 
-        background color
-    </h3>
+<body style="text-align:center; background-color: brown;">
 
-    <div onclick="myFunc()">
-        Maximal Layout 
-    </div>
-<br><br><br><br>
-       <div onclick="redcolor()">
-background    </div>
+  <h3>Click on button to change the background color</h3>
 
-<div onclick="myFunc()"> second yellow button</div>
+  <div onclick="changeBg()">Maximal Layout</div>
+  <br><br><br><br>
+  <div onclick="changeBg()">background</div>
+  <div onclick="changeBg()">second yellow button</div>
 
+  <script>
+    function changeBg() {
+      const colors = ['yellow', 'red', 'blue', 'green', 'purple'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      document.body.style.backgroundColor = randomColor;
+    }
+  </script>
 
-    <script>
-        function myFunc() {
-            document.body.style.background = 'yellow';
-            document.body.style.fontFamily = 'fantasy';
-            document.body.style.fontSize = '3em'
-        }   
-        
-        function redcolor() {
-            document.body.style.background = 'red';
-        }   
-    </script>
 </body>
 
 </html>
