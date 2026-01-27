@@ -1,70 +1,51 @@
-body{
-background-color: rgb(255, 0, 195);
-z-index: -5;
+@import url('https://fonts.googleapis.com/css2?family=Beth+Ellen&family=Borel&family=Caveat:wght@400..700&family=Homemade+Apple&family=Miniver&family=Playwrite+HR:wght@100..400&family=Rock+Salt&display=swap');
+
+body {
+    background-color: rgb(255, 0, 195);
+    font-family: MSCHFSansMono, monospace, Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
 }
 
 
  /*-----------------TITOLO----------------*/
 
-    .titlewrap{
-        width: 100vw;
-    }
-
-    #title{
-        font-size: 350%;
-        font-family:MSCHFSansMono,monospace,Arial,Helvetica,sans-serif;
-        display: block;
-        position: fixed;
-        line-height:3vw;
-        height: 90px;
-        
-        /*text-transform:uppercase;*/
-        color:antiquewhite;
-        position: center;  
-        /*border: 1px solid red;*/
-    }
-
-    #titlehover{
-        display: block;
-        position: fixed;
-        opacity: 0; 
-        width: 50%;  
-        /*border: 1px solid red;*/
-    }
-
-
-    .titlewrap:hover #titlehover{
-    opacity: 1;  
-    }
-
-.titlewrap:hover #title {
+.titlewrap { width: 100vw; 
+    /* cursor: pointer;  */
+}
+#title {
+    font-size: 350%;
+    color: white;
+    position: fixed;
+    line-height: 3vw;
+    z-index: 10;
+}
+#titlehover {
+    position: fixed;
     opacity: 0;
+    width: 50%;
+    z-index: 9;
+}
+.titlewrap:hover #titlehover { opacity: 1; }
+.titlewrap:hover #title { opacity: 0; }
+
+
+
+
+ /*-----------------CATEGORIE----------------*/
+
+
+#categoryList {
+    position: fixed;
+    top: 20%;
+    margin-left: 3%;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 25px;
+    width: 490px;
+    z-index: 20;
+    margin-top: 50px;
 }
 
-
-
-
-
-/*--------------STILE DEL TESTO---------------*/
-
-    
-#categoryList{
-     position: fixed;
-     top: 20%;
-     font-weight: bold;
-     margin-left: 0%;
-     font-size: 20px;
-     line-height: 25px;
-     width: 450px;
-     margin-top: 50px;
-     font-family:MSCHFSansMono,monospace,Arial,Helvetica,sans-serif;
-        
-      border: 1px solid red; 
-}
-
-.category{
-     margin-left: 3%;
-}
 
 #papers,
 #illegible {
@@ -86,12 +67,74 @@ z-index: -5;
 }
 
 
+.category { cursor: pointer;  /* transition: 0.2s;  */}
+.category:hover {
+    color: black;
+    background-color: white;
+    width: fit-content;
+    /* padding: 0 10px; */
+}
+
+
+
+/* OVERLAYS & TABS */
+
+.category-overlay {
+    display: none; /* Gestito da JS */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; /* Cruciale: permette di cliccare attraverso il div */
+    z-index: 100;
+}
+
+.gallery img, .extra-assets img {
+    pointer-events: auto; /* Riattiva il click sulle immagini */
+    position: absolute;
+    width: 400px;
+    cursor: pointer;
+}
+
+/* Posizionamento iniziale Tab */
+.gallery { position: absolute; top: 200px; left: 40%; }
+
+/* Draggable Assets */
+.draggable-asset {
+    width: 150px !important;
+    /* position:absolute; */
+    border: 1px dashed transparent;
+    left: 500px;
+    top: 500px;
+    cursor: move;
+}
+
+/* Quando trasciniamo, mostriamo un bordo per capire che è attiva */
+.ui-draggable-dragging {
+    border: 1px dashed white;
+    z-index: 1000;
+}
+
+/* Le maniglie per il resizable di jQuery UI */
+.ui-resizable-handle {
+    
+    border: 1px solid #000;
+    background: white;
+    width: 10px;
+    height: 10px;
+}
+
+
+/* Le immagini devono poter essere cliccate */
+.tab-img, .draggable-asset {
+    pointer-events: auto !important; 
+    position: absolute;
+    z-index: 110;
+}
 
 /*--------------STILE DELL'HOVERING SUL TESTO---------------*/
-
     .category:hover{
-        color: rgb(38, 0, 255);
-        background-color: rgb(234, 255, 0);
+        color: rgb(0, 0, 0);
+        background-color: rgb(255, 255, 255);
         width: 400px;
       
     }
@@ -107,7 +150,7 @@ z-index: -5;
     #papers:hover{
         font-family: "Playwrite VN Guides", cursive;
         font-weight: 400;
-        left: 35px;
+        padding-left: 36px;
         font-style: normal;
         transform:scaleX(1.2)
     }
@@ -157,110 +200,70 @@ z-index: -5;
 
 button{
         font-size: large;
-        font-family:MSCHFSansMono,monospace,Arial,Helvetica,sans-serif;
+        font-family:MSCHFSansMono,monospace,Arial,Helvetica,sans-serif; 
         font-size:20px;
         line-height:3vw;
         background-color: rgb(255, 255, 255);
         margin: 1px solid black;
         z-index: 101;
+        gap: 200px;
         border-radius: 20%; 
         
+        
     }    
-
-
-footer{
-    /*position: fixed;
-    right: 1px;
-    display: inline-block;
-    bottom: 2%;*/
-    display: none;
-    background-color: rgb(136, 255, 0);
-    
-    width: 300px;
-    z-index: 100;
-    line-height: 12px;
-    font-size: 10px;
-    }
 
 .star {
     position: absolute;
     width: 30px;
     height: 30px;
     pointer-events: none;
-    transform: translate(-50%, -50%);
+    transform: translate(-0%, -0%);
     animation: fade 0.1s ease-in-out; /*oppure forward*/
     }
 
-@keyframes fade {
-    0% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
-    100% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
+
+/* STELLINE & DOWNLOAD AREA */
+.star {
+    position: absolute;
+    width: 30px;
+    pointer-events: none;
+    z-index: 999;
 }
-
-
-
-
-#download_area{
+#download_area {
     position: fixed;
-    text-align: center;
-    
+    right: 20px;
+    top: 0;
     width: 595px;
     height: 842px;
-    right: 20px;
-    z-index:1;
-    pointer-events: none; 
-    border: 1px solid black;
+    /* border: 1px solid black; */
+    pointer-events: none;
 }
 
+/* FOOTER */
+.hover-target { position: fixed; bottom: 10px; left: 20px; cursor: help; }
 
 
 
-
-
-
-/*----------------------STILE APERTURA TABS------------------------------*/
-
-#overlay_maximalist,
-#overlay_papers,
-#overlay_icons,
-#overlay_drawings,
-#overlay_ornaments,
-#overlay_collages,
-#overlay_illegible,
-#overlay_browsing {
-    display: none; /* nascosto all'inizio */
-    justify-content: center;
-    align-items: center;
-    position:fixed;
-    width: 30%;
-    left: 30%;
-    bottom: 120px;
-    top: 200px;
-    z-index: 100;
-    
-}
-
-/*Contenitore immagini */
-.gallery {
-    gap: 0px;
-    /*border: 1px solid black;*/
-}
-
-
-/* Immagini */
-.gallery img  {
-    width: 450px;
+#stellina { width: 45px; }
+.footer {
     position: absolute;
-    /*display:initial; */
-    cursor: pointer;
+  top: calc(10% + 10px); 
+  left: calc(30% + 20px); 
 
-    transition: transform 0.2s;
+   
+    background: #88ff00;
+    padding: 3px;
+    padding-bottom: 10px;
+    font-size: 10px;
+    line-height: 10px;
+    opacity: 0;
+    transition: 0.3s;
+    width: 230px;
+    height: 30px;
 }
+.hover-target:hover .footer { opacity: 1; }
+
+
 
 #maximalist1,
 #papers1,
@@ -272,6 +275,7 @@ footer{
 #browsing1 {
     transform: rotate(5deg);
 }
+
 
 #maximalist2,
 #papers2,
@@ -293,53 +297,6 @@ footer{
 #illegible3,
 #browsing3 {
     transform: rotate(8deg);
-}
-
-
-
-
-
-
-
-
-/*--------------facce lettere ornaments--------------------*/
-
-
-
-#faces{
-    display: none;  /*nascosto all'inizio*/
-    justify-content: center;
-    align-items: center;
-    position:fixed;
-    width: 100%;
-    height: 100%;
-    top:0;
-    left: 210px;
-
-    /*border: 1px solid black;*/
-}
-.cutouts {
-    gap: 10px;
-    z-index: 50;
-}
-
-.cutouts img  {
-    width: 300px;
-    right: 30%;
-    position: absolute;
-    /*display:initial; */
-    cursor: pointer;
-}
-
-
-
-
-
-
-
-
-.illegible-font {
-    font-family:'Times New Roman', Times, serif
 }
 
 
