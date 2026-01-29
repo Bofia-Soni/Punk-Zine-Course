@@ -1,367 +1,205 @@
 $(document).ready(function() {
 
-    /**
-     * FUNZIONE: Attiva Drag e Resize su un elemento
-     * @param {jQuery} $element - L'elemento da rendere interattivo
-     */
-    function makeInteractive($element) {
-        $element.draggable({
-            stack: ".draggable-asset, .tab-img", // Gestisce lo z-index automaticamente al tocco
-            containment: "body" // Impedisce che l'immagine esca dai bordi del sito
-        }).resizable({
-            aspectRatio: true, // Mantiene le proporzioni originali
-            handles: "all"     // Aggiunge maniglie di ridimensionamento su tutti i lati
-        });
+    // --- VARIABILI PER IL DISEGNO ---
+    let isDrawing = false;
+    let drawingActive = false;
+    let ctx;
+    const canvasContainer = document.getElementById('canvas');
+    let realCanvas;
+
+    function setupDrawingCanvas() {
+        if (!canvasContainer) return;
+        realCanvas = document.createElement('canvas');
+        realCanvas.width = 595; 
+        realCanvas.height = 842;
+        realCanvas.style.position = "absolute";
+        realCanvas.style.top = "0";
+        realCanvas.style.left = "0";
+        canvasContainer.appendChild(realCanvas);
+        ctx = realCanvas.getContext('2d');
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+
+        $(realCanvas).on('mousedown', startDrawing);
+        $(realCanvas).on('mousemove', draw);
+        $(realCanvas).on('mouseup mouseleave', stopDrawing);
     }
 
-    /**
-     * FUNZIONE: Sparpaglia le immagini extra in posizioni casuali
-     * @param {jQuery} $container - L'overlay che contiene le immagini
-     */
-    function scatterAssets($container) {
-        const assets = $container.find(".draggable-asset");
-        
-        assets.each(function() {
-            const $el = $(this);
-            
-            // Calcola coordinate casuali basate sulla finestra del browser
-            const randomX = Math.random() * (window.innerWidth - 300);
-            const randomY = Math.random() * (window.innerHeight - 300);
-            
-            $el.css({
-                left: randomX + "px",
-                top: randomY + "px",
-                display: "block", // Le rende visibili dopo il calcolo
-                position: "absolute"
-            });
-
-            // Attiva le funzionalità se non sono già state inizializzate
-            if (!$el.hasClass("ui-draggable")) {
-                makeInteractive($el);
-            }
-        });
+    function startDrawing(e) {
+        if (!drawingActive) return;
+        isDrawing = true;
+        ctx.beginPath();
+        const rect = realCanvas.getBoundingClientRect();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
     }
 
-    // --- 1. GESTIONE CLICK SULLE CATEGORIE ---
+    function draw(e) {
+        if (!isDrawing || !drawingActive) return;
+        const rect = realCanvas.getBoundingClientRect();
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.stroke();
+    }
+
+    function stopDrawing() { isDrawing = false; }
+
+    setupDrawingCanvas();
+
+    // --- INTEGRAZIONE LAYOUT & INTERACT ---
+    const MM_PER_PX = 25.4 / 96;
+    let topZ = 100;
+    let selectedId = null;
+    const layout = {}; // Modello dinamico
+
+    // Funzione per registrare una nuova immagine nel sistema Interact
+    function registerInLayout($el) {
+        // Assegna un ID unico se non ce l'ha
+        let id = $el.attr('data-id');
+        if (!id) {
+            id = 'img_' + Math.random().toString(36).substr(2, 9);
+            $el.attr('data-id', id);
+        }
+
+        // Inserisce nel modello layout usando le posizioni correnti (convertite in mm)
+        const pos = $el.position();
+        layout[id] = {
+            x: pos.left * MM_PER_PX,
+            y: pos.top * MM_PER_PX,
+            width: $el.width() * MM_PER_PX,
+            height: $el.height() * MM_PER_PX,
+            rotation: (Math.random() * 10) - 5, // Rotazione casuale punk
+            z: ++topZ
+        };
+
+        render($el[0]);
+    }
+
+    function render(el) {
+        const d = layout[el.getAttribute('data-id')];
+        if (!d) return;
+        el.style.left = d.x + 'mm';
+        el.style.top = d.y + 'mm';
+        el.style.width = d.width + 'mm';
+        el.style.height = d.height + 'mm';
+        el.style.transform = `rotate(${d.rotation}deg)`;
+        el.style.zIndex = d.z;
+    }
+
+    // --- GESTIONE CATEGORIE ---
     $(".category").on("click", function() {
         const id = $(this).attr("id");
         const $overlay = $("#overlay_" + id);
-        
-        // Mostra l'overlay specifico
         $overlay.show();
 
-        // Sparpaglia e attiva le immagini extra (Gagarin, icone, ecc.)
-        scatterAssets($overlay);
+        // Mostra e registra le immagini
+        $overlay.find(".draggable-asset, .tab-img").each(function() {
+            const $img = $(this);
+            const randomX = Math.random() * (window.innerWidth - 300);
+            const randomY = Math.random() * (window.innerHeight - 300);
+            
+            $img.css({
+                left: randomX + "px",
+                top: randomY + "px",
+                display: "block",
+                position: "absolute"
+            });
 
-        // --- Logiche Speciali Personalizzate ---
+            // Inizializza jQuery UI Resizable (per le maniglie)
+            if (!$img.hasClass("ui-resizable")) {
+                $img.resizable({ aspectRatio: true, handles: "all" });
+            }
+
+            // Registra nel sistema di movimento Interact
+            registerInLayout($img);
+        });
+
+        if (id === "drawings") {
+            drawingActive = true;
+            $("body").addClass("drawing-mode");
+            $("#canvas").addClass("active");
+        }
+        
         if(id === "papers") {
             const colors = ['yellow', 'red', 'blue', '#88ff00', '#c03aff'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            $("body").css("background-color", randomColor);
-        }
-
-        if(id === "illegible") {
-            $("body").css({
-                // "background-color": "#111",
-                "font-family": "Mess_Light"
-            });
+            $("body").css("background-color", colors[Math.floor(Math.random() * colors.length)]);
         }
     });
 
-    // --- 2. GESTIONE CHIUSURA TAB ---
-    // Usiamo il click delegato per gestire immagini create/mostrate dinamicamente
-    $(document).on("click", ".tab-img", function() {
-        const $img = $(this);
-        const $parentOverlay = $img.closest(".category-overlay");
-        
-        $img.fadeOut(50, function() {
-            $(this).remove(); // Rimuove fisicamente la tab dal codice
-            
-            // Se in questo overlay non ci sono più tab, chiudiamo il contenitore gallery
-            // ma lasciamo visibili i draggable-assets sparsi
-            if ($parentOverlay.find(".tab-img").length === 0) {
-                $parentOverlay.find(".gallery").hide();
+    // Selezione e Rotazione
+    $(document).on('click', '.draggable-asset, .tab-img', function(e) {
+        e.stopPropagation();
+        selectedId = $(this).attr('data-id');
+        $(".draggable-asset, .tab-img").removeClass('selected');
+        $(this).addClass('selected');
+        layout[selectedId].z = ++topZ;
+        render(this);
+    });
+
+    $(document).on('click', function() {
+        selectedId = null;
+        $(".draggable-asset, .tab-img").removeClass('selected');
+    });
+
+    // Interact.js Drag & Resize
+    interact('.draggable-asset, .tab-img')
+        .draggable({
+            listeners: {
+                move(e) {
+                    const d = layout[e.target.getAttribute('data-id')];
+                    if (!d) return;
+                    const angle = d.rotation * Math.PI / 180;
+                    const dx = e.dx * MM_PER_PX;
+                    const dy = e.dy * MM_PER_PX;
+                    d.x += dx * Math.cos(angle) + dy * Math.sin(angle);
+                    d.y += -dx * Math.sin(angle) + dy * Math.cos(angle);
+                    render(e.target);
+                }
             }
+        })
+        .resizable({
+            edges: { right: true, bottom: true },
+            listeners: {
+                move(e) {
+                    const d = layout[e.target.getAttribute('data-id')];
+                    if (!d) return;
+                    d.width += e.deltaRect.width * MM_PER_PX;
+                    d.height += e.deltaRect.height * MM_PER_PX;
+                    render(e.target);
+                }
+            }
+        });
+
+    // Rotazione da tastiera
+    document.addEventListener('keydown', e => {
+        if (!selectedId) return;
+        const d = layout[selectedId];
+        if (e.key === 'ArrowLeft') d.rotation -= 2;
+        if (e.key === 'ArrowRight') d.rotation += 2;
+        render(document.querySelector(`[data-id="${selectedId}"]`));
+    });
+
+    // --- EXPORT PDF (html2canvas) ---
+    $("#print").on("click", function() {
+        // Disattiva temporaneamente i bordi di selezione per il print
+        $(".selected").removeClass("selected");
+        
+        html2canvas(document.body, {
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            scale: 2 // Migliore qualità
+        }).then(canvas => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgData = canvas.toDataURL('image/png');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save("punkzinator_zine.pdf");
         });
     });
 
-    // --- 3. EFFETTO STELLINE AL CLICK ---
-    $(document).on("click", function(e) {
-        // Appare solo se non clicchiamo su elementi interattivi
-        if (!$(e.target).closest('.category, button, img').length) {
-            const star = $('<img src="SOURCES/img/star.PNG" class="star">');
-            star.css({
-                left: e.pageX - 15 + "px",
-                top: e.pageY - 15 + "px"
-            });
-            $('body').append(star);
-            setTimeout(() => star.remove(), 300);
-        }
-    });
-
-    // --- 4. RESET ---
-    $("#reset").on("click", function() {
-        location.reload(); // Ricarica la pagina allo stato originale
-    });
-
+    $("#reset").on("click", function() { location.reload(); });
 });
-
-
-
-
-
-
-
-
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-/* 
-  Conversion factor:
-  Browsers work in pixels, but our layout uses millimeters (mm) 
-  because we want print-accurate positioning.
-
-  96 px = 1 inch
-  25.4 mm = 1 inch
-  So: mm per pixel = 25.4 / 96
-*/
-const MM_PER_PX = 25.4 / 96;
-
-/* 
-  Select all elements that have the class ".item"
-  These are our draggable / resizable images on the canvas.
-*/
-const items = document.querySelectorAll('.draggable-asset');
-
-/* 
-  Stores which item is currently selected (clicked).
-  If nothing is selected, this stays null.
-*/
-let selectedId = null;
-
-
-/* ---------- LAYOUT MODEL ---------- */
-
-/*
-  This is the MOST IMPORTANT part of the system.
-
-  It is the "single source of truth":
-  - The screen reads from this object
-  - Printing uses this object
-  - Exporting will use this object
-
-  Each image has:
-  x, y       → position on the page (in mm)
-  width      → size in mm
-  height     → size in mm
-  rotation   → rotation in degrees
-  z          → stacking order (which is on top)
-*/
-const layout = {
-  a: {
-    x: 20,
-    y: 30,
-    width: 100,
-    height: 70,
-    rotation: -5,
-    z: 1
-  },
-  b: {
-    x: 60,
-    y: 90,
-    width: 110,
-    height: 80,
-    rotation: 4,
-    z: 2
-  }
-};
-
-
-/* ---------- Z-INDEX TRACKING ---------- */
-
-/*
-  Find the highest existing z-index value.
-  This allows us to always bring the clicked item to the front.
-
-  Math.max(...) finds the largest number in the array.
-*/
-let topZ = Math.max(...Object.values(layout).map(d => d.z));
-
-
-/* ---------- RENDER ---------- */
-
-/*
-  Render means:
-  "Apply the data from the layout model to the actual DOM element"
-
-  This function takes:
-  - the element (el)
-  - finds its data in the layout
-  - applies position, size, rotation, and stacking order
-*/
-function render(el) {
-  const d = layout[el.dataset.id]; // dataset.id matches layout key
-
-  el.style.left = d.x + 'mm';
-  el.style.top = d.y + 'mm';
-  el.style.width = d.width + 'mm';
-  el.style.height = d.height + 'mm';
-
-  // rotation is visual only, position stays real
-  el.style.transform = `rotate(${d.rotation}deg)`;
-
-  // z-index controls which item is on top
-  el.style.zIndex = d.z;
-}
-
-/* 
-  Render all items once on page load
-*/
-items.forEach(render);
-
-
-/* ---------- SELECTION ---------- */
-
-/*
-  When clicking on an item:
-  - stop the click from reaching the body
-  - mark it as selected
-*/
-items.forEach(el => {
-  el.addEventListener('click', e => {
-    e.stopPropagation(); // prevent deselect
-    select(el.dataset.id);
-  });
-});
-
-/*
-  Clicking anywhere outside items:
-  - clears the selection
-*/
-document.body.addEventListener('click', () => {
-  selectedId = null;
-  items.forEach(i => i.classList.remove('selected'));
-});
-
-
-/*
-  Handles selecting an item
-*/
-function select(id) {
-  // If already selected, do nothing
-  if (selectedId === id) return;
-
-  selectedId = id;
-
-  // Bring the selected item to the top
-  layout[id].z = ++topZ;
-
-  // Update visual selection state
-  items.forEach(el => {
-    const isSelected = el.dataset.id === id;
-    el.classList.toggle('selected', isSelected);
-
-    // Re-render only the selected element
-    if (isSelected) render(el);
-  });
-}
-
-
-/* ---------- INTERACT (DRAG + RESIZE) ---------- */
-
-/*
-  Interact.js handles pointer interactions (mouse dragging, resizing).
-  We never let it move elements directly.
-  Instead, it updates the layout model, then we re-render.
-*/
-
-interact('.draggable-asset')
-  .draggable({
-    listeners: {
-      move(e) {
-        // Get the layout data for this element
-        const d = layout[e.target.dataset.id];
-
-        /*
-          Rotation-aware dragging:
-
-          If an element is rotated, moving the mouse "right"
-          should still move the element visually right.
-
-          So we convert movement using rotation math.
-        */
-
-        const angle = d.rotation * Math.PI / 180;
-        const cos = Math.cos(angle);
-        const sin = Math.sin(angle);
-
-        // Convert pixel movement to millimeters
-        const dx = e.dx * MM_PER_PX;
-        const dy = e.dy * MM_PER_PX;
-
-        // Apply movement corrected for rotation
-        d.x += dx * cos + dy * sin;
-        d.y += -dx * sin + dy * cos;
-
-        // Apply changes to the screen
-        render(e.target);
-      }
-    }
-  })
-
-  .resizable({
-    edges: { right: true, bottom: true }, // resize from bottom-right only
-    listeners: {
-      move(e) {
-        const d = layout[e.target.dataset.id];
-
-        // Convert pixel resize to millimeters
-        d.width += e.deltaRect.width * MM_PER_PX;
-        d.height += e.deltaRect.height * MM_PER_PX;
-
-        render(e.target);
-      }
-    }
-  });
-
-
-/* ---------- ROTATION (KEYBOARD) ---------- */
-
-/*
-  Rotation is controlled by keyboard arrows:
-
-  - Select an image
-  - Press ArrowLeft or ArrowRight
-*/
-
-document.addEventListener('keydown', e => {
-  if (!selectedId) return; // no selected item → nothing to rotate
-
-  const d = layout[selectedId];
-
-  if (e.key === 'ArrowLeft') d.rotation -= 1;
-  if (e.key === 'ArrowRight') d.rotation += 1;
-
-  // Update the selected element visually
-  render(document.querySelector(`[data-id="${selectedId}"]`));
-});
-
-
-/* ---------- PRINT ---------- */
-
-/*
-  Triggers the browser print dialog.
-  Since the canvas is sized in mm, print output matches layout.
-*/
-document.getElementById('print').onclick = () => {
-  window.print();
-};
-
-
-
-
-
-
-

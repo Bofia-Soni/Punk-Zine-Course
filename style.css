@@ -158,10 +158,10 @@ body {
         transform:scaleX(1.2)
     }
     #icons:hover{
-        font-family: "Rock Salt", cursive;
+        font-family:fantasy;
         font-weight: 400;
         font-style: normal;
-        text-decoration:wavy;
+        letter-spacing: 3px;
     }
     #drawings:hover{
         font-family: "Miniver", cursive;
@@ -170,7 +170,7 @@ body {
         font-style: normal;
     }
     #ornaments:hover{
-        font-family: "Borel", cursive;
+        font-family:cursive;
         font-weight: 400;
         font-style: normal;
     }
@@ -335,11 +335,8 @@ button{
 }
 
 
-
-#letter1,
-#letter2,
-#letter3 {
-    width: 50px;
+.letter{
+    width: 2px;
 }
 
 
