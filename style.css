@@ -46,7 +46,6 @@ body {
     margin-top: 50px;
 }
 
-
 #papers,
 #illegible {
     transform: rotate(4deg);
@@ -100,12 +99,12 @@ body {
 
 /* Draggable Assets */
 .draggable-asset {
-    width: 150px !important;
-    /* position:absolute; */
+    width: 120px !important;
+    position:absolute;
+    transform-origin: center center;
     border: 1px dashed transparent;
-    left: 500px;
-    top: 500px;
-    cursor: move;
+    z-index: 100;
+    cursor: grab;
 }
 
 /* Quando trasciniamo, mostriamo un bordo per capire che è attiva */
@@ -124,6 +123,12 @@ body {
 }
 
 
+.tab-img{
+    border: 1px solid black;
+    box-shadow: black;
+    z-index: 200;
+}
+
 /* Le immagini devono poter essere cliccate */
 .tab-img, .draggable-asset {
     pointer-events: auto !important; 
@@ -138,7 +143,6 @@ body {
         width: 400px;
       
     }
-
     #maximalist:hover{
         font-family: "Playwrite HR", cursive;
         font-optical-sizing: auto;
@@ -146,7 +150,6 @@ body {
         font-style: normal;
         transform: rotate(5deg);
     }
-
     #papers:hover{
         font-family: "Playwrite VN Guides", cursive;
         font-weight: 400;
@@ -154,27 +157,23 @@ body {
         font-style: normal;
         transform:scaleX(1.2)
     }
-
     #icons:hover{
         font-family: "Rock Salt", cursive;
         font-weight: 400;
         font-style: normal;
         text-decoration:wavy;
     }
-
     #drawings:hover{
         font-family: "Miniver", cursive;
         transform: skewX(20deg);
         font-weight: 400;
         font-style: normal;
     }
-
     #ornaments:hover{
         font-family: "Borel", cursive;
         font-weight: 400;
         font-style: normal;
     }
-
     #collages:hover{
         font-family: 'MagazineLetterByBrntlbrnl-Regular';
         /*font-family: "Playwrite NO Guides", cursive;
@@ -183,13 +182,10 @@ body {
         
         font-style: normal;
     }
-
     #illegible:hover{
         font-family: 'Mess_Light';
         font-weight: 400;
     }
-    
-
     #browsing:hover{
     font-family: "Homemade Apple", cursive;
     font-weight: 400;
@@ -229,7 +225,7 @@ button{
     pointer-events: none;
     z-index: 999;
 }
-#download_area {
+#canvas {
     position: fixed;
     right: 20px;
     top: 0;
@@ -237,6 +233,7 @@ button{
     height: 842px;
     /* border: 1px solid black; */
     pointer-events: none;
+    z-index: 1; 
 }
 
 /* FOOTER */
@@ -276,7 +273,6 @@ button{
     transform: rotate(5deg);
 }
 
-
 #maximalist2,
 #papers2,
 #icons2,
@@ -297,6 +293,66 @@ button{
 #illegible3,
 #browsing3 {
     transform: rotate(8deg);
+}
+
+
+
+
+
+
+.canvas {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  background: white;
+  margin: 20px;
+  /* box-shadow: 0 0 20px rgba(0,0,0,.2); */
+  overflow: hidden;
+}
+
+.draggable-asset {
+  /* position: absolute; */
+  transform-origin: center center;
+  cursor: grab;
+  user-select: none;
+  
+}
+
+/* .draggable-asset.selected {
+  outline: 2px solid #0077ff;
+} */
+
+.draggable-asset:active {
+  cursor: grabbing;
+}
+
+/* Print: only canvas */
+@media print {
+  body * { display: none !important; }
+  .canvas, .canvas * {
+    display: block !important;
+  }
+}
+
+
+
+#letter1,
+#letter2,
+#letter3 {
+    width: 50px;
+}
+
+
+
+/* Classe per attivare il cursore a matita */
+.drawing-mode {
+    cursor: url('SOURCES/img/star.PNG'), crosshair !important;
+}
+
+/* Assicuriamoci che il canvas possa ricevere input quando serve */
+#canvas.active {
+    pointer-events: auto !important;
+    
 }
 
 

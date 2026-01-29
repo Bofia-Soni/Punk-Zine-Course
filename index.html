@@ -8,6 +8,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -72,9 +73,15 @@
                 <img src="SOURCES/tabs/tabs_icons_4.png" class="tab-img" id="icons4">
             </div>
             <div class="extra-assets">
-                <img src="SOURCES/faces/gagarin.PNG" class="draggable-asset" id="gagarin">
-                <img src="SOURCES/faces/gagarin1.PNG" class="draggable-asset" id="gagarin1">
-                <img src="SOURCES/faces/madonna.PNG" class="draggable-asset" id="madonna">
+                <img src="SOURCES/faces/madonna5.PNG" class="draggable-asset" id="madonna5">
+                <img src="SOURCES/faces/madonna4.PNG" class="draggable-asset" id="madonna4">
+                <img src="SOURCES/faces/madonna3.PNG" class="draggable-asset" id="madonna3">
+                <img src="SOURCES/faces/madonna2.PNG" class="draggable-asset" id="madonna2">
+                <img src="SOURCES/faces/queen1.PNG" class="draggable-asset" id="queen1">
+                <img src="SOURCES/faces/Mikey1.PNG" class="draggable-asset" id="mikey1">
+                <img src="SOURCES/faces/Mikey5.PNG" class="draggable-asset" id="mikey5">
+                <img src="SOURCES/faces/ted6.PNG" class="draggable-asset" id="ted6">
+
             </div>
         </div>
 
@@ -100,9 +107,14 @@
             <div class="extra-assets">
             <img src="SOURCES/ornaments/orn_1.png" class="draggable-asset" id="orn1">
             <img src="SOURCES/ornaments/orn_2.PNG" class="draggable-asset" id="orn2">
-            <img src="SOURCES/ornaments/orn_3.PNG" class="draggable-asset" id="orn3">
+            <img src="SOURCES/ornaments/orn_7.PNG" class="draggable-asset" id="orn3">
             <img src="SOURCES/ornaments/orn_4.PNG" class="draggable-asset" id="orn4">
             <img src="SOURCES/ornaments/orn_5.png" class="draggable-asset" id="orn5">
+            <img src="SOURCES/ornaments/orn_8.png" class="draggable-asset" id="orn6">
+            <img src="SOURCES/ornaments/orn_10.PNG" class="draggable-asset" id="orn7">
+            <img src="SOURCES/ornaments/orn_16.PNG" class="draggable-asset" id="orn8">
+            <img src="SOURCES/ornaments/orn_14.PNG" class="draggable-asset" id="orn9">
+            <img src="SOURCES/ornaments/orn_13.png" class="draggable-asset" id="orn0">
 
          </div>
         </div>
@@ -116,9 +128,16 @@
                 <img src="SOURCES/tabs/tabs_collages_4.png" class="tab-img" id="collages4">
             </div>
             <div class="extra-assets">
-            <img src="SOURCES/letters/LET (1).png" class="draggable-asset">
-             <img src="SOURCES/letters/LET (2).png" class="draggable-asset">
-              <img src="SOURCES/letters/LET (3).png" class="draggable-asset">
+            <img src="SOURCES/letters/LET (6).png" class="draggable-asset" id="letter1">
+             <img src="SOURCES/letters/LET (8).png" class="draggable-asset" id="letter2" >
+              <img src="SOURCES/letters/LET (12).png" class="draggable-asset" id="letter3">
+              <img src="SOURCES/letters/LET (14).png" class="draggable-asset" id="letter4">
+              <img src="SOURCES/letters/LET (23).png" class="draggable-asset" id="letter5">
+              <img src="SOURCES/letters/LET (26).png" class="draggable-asset" id="letter6">
+              <img src="SOURCES/letters/LET (28).png" class="draggable-asset" id="letter7">
+              <img src="SOURCES/letters/LET (29).png" class="draggable-asset" id="letter8">
+              <img src="SOURCES/letters/LET (33).png" class="draggable-asset" id="letter9">
+              <img src="SOURCES/letters/LET (23).png" class="draggable-asset" id="letter10">
         </div>
         </div>
 
@@ -133,8 +152,8 @@
             </div>
         </div>
 
-         <p class="category" id="browsing">Hard browsing experience</p>
-        <div id="overlay_BROWSING" class="category-overlay">
+         <p class="category" id="browsing" onclick="document.body.style.transform = this.click ? 'scaleX(-1)' : 'scaleX(1)'">Hard browsing experience</p>
+        <div id="overlay_browsing" class="category-overlay">
             <div class="gallery">
                 <img src="SOURCES/tabs/tabs_browsing_1.png" class="tab-img" id="browsing1">
                 <img src="SOURCES/tabs/tabs_browsing_2.png" class="tab-img" id="browsing2">
@@ -144,7 +163,7 @@
         </div>
 
         <br><br>
-        <button class="button" id="Download">Download</button>
+        <button class="button" id="print">Print/Export PDF</button>
         <button class="button" id="reset">Reset</button>
 
         <div class="hover-target">
@@ -156,8 +175,8 @@
         </div>
     </div>
 
-    <div id="download_area">download area</div>
+    <div id="canvas" class="canvas">**</div>
 
-    <script src="script1.js"></script>
+    <script src="script2.js"></script>
 </body>
 </html>

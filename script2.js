@@ -2,40 +2,34 @@ $(document).ready(function() {
 
     /**
      * FUNZIONE: Attiva Drag e Resize su un elemento
-     * @param {jQuery} $element - L'elemento da rendere interattivo
      */
     function makeInteractive($element) {
         $element.draggable({
-            stack: ".draggable-asset, .tab-img", // Gestisce lo z-index automaticamente al tocco
-            containment: "body" // Impedisce che l'immagine esca dai bordi del sito
+            stack: ".draggable-asset, .tab-img",
+            containment: "body"
         }).resizable({
-            aspectRatio: true, // Mantiene le proporzioni originali
-            handles: "all"     // Aggiunge maniglie di ridimensionamento su tutti i lati
+            aspectRatio: true,
+            handles: "all"
         });
     }
 
     /**
-     * FUNZIONE: Sparpaglia le immagini extra in posizioni casuali
-     * @param {jQuery} $container - L'overlay che contiene le immagini
+     * FUNZIONE: Sparpaglia le immagini extra
      */
     function scatterAssets($container) {
         const assets = $container.find(".draggable-asset");
-        
         assets.each(function() {
             const $el = $(this);
-            
-            // Calcola coordinate casuali basate sulla finestra del browser
             const randomX = Math.random() * (window.innerWidth - 300);
             const randomY = Math.random() * (window.innerHeight - 300);
             
             $el.css({
                 left: randomX + "px",
                 top: randomY + "px",
-                display: "block", // Le rende visibili dopo il calcolo
+                display: "block",
                 position: "absolute"
             });
 
-            // Attiva le funzionalità se non sono già state inizializzate
             if (!$el.hasClass("ui-draggable")) {
                 makeInteractive($el);
             }
@@ -47,13 +41,22 @@ $(document).ready(function() {
         const id = $(this).attr("id");
         const $overlay = $("#overlay_" + id);
         
-        // Mostra l'overlay specifico
         $overlay.show();
-
-        // Sparpaglia e attiva le immagini extra (Gagarin, icone, ecc.)
         scatterAssets($overlay);
 
-        // --- Logiche Speciali Personalizzate ---
+        // --- LOGICA DISEGNO (Hand Drawings) ---
+        if (id === "drawings") {
+            drawingActive = true;
+            $("body").addClass("drawing-mode");
+            $("#canvas").addClass("active"); // Attiva pointer-events via CSS
+        } else {
+            // Se vuoi che il disegno si disattivi cliccando altre categorie:
+            // drawingActive = false;
+            // $("body").removeClass("drawing-mode");
+            // $("#canvas").removeClass("active");
+        }
+
+        // --- Altre Logiche Speciali ---
         if(id === "papers") {
             const colors = ['yellow', 'red', 'blue', '#88ff00', '#c03aff'];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -61,24 +64,17 @@ $(document).ready(function() {
         }
 
         if(id === "illegible") {
-            $("body").css({
-                // "background-color": "#111",
-                "font-family": "Mess_Light"
-            });
+            $("body").css({ "font-family": "Mess_Light" });
         }
     });
 
     // --- 2. GESTIONE CHIUSURA TAB ---
-    // Usiamo il click delegato per gestire immagini create/mostrate dinamicamente
     $(document).on("click", ".tab-img", function() {
         const $img = $(this);
         const $parentOverlay = $img.closest(".category-overlay");
         
         $img.fadeOut(50, function() {
-            $(this).remove(); // Rimuove fisicamente la tab dal codice
-            
-            // Se in questo overlay non ci sono più tab, chiudiamo il contenitore gallery
-            // ma lasciamo visibili i draggable-assets sparsi
+            $(this).remove();
             if ($parentOverlay.find(".tab-img").length === 0) {
                 $parentOverlay.find(".gallery").hide();
             }
@@ -87,8 +83,8 @@ $(document).ready(function() {
 
     // --- 3. EFFETTO STELLINE AL CLICK ---
     $(document).on("click", function(e) {
-        // Appare solo se non clicchiamo su elementi interattivi
-        if (!$(e.target).closest('.category, button, img').length) {
+        // Appare solo se non clicchiamo su elementi interattivi o sul canvas attivo
+        if (!$(e.target).closest('.category, button, img, canvas').length) {
             const star = $('<img src="SOURCES/img/star.PNG" class="star">');
             star.css({
                 left: e.pageX - 15 + "px",
@@ -101,11 +97,67 @@ $(document).ready(function() {
 
     // --- 4. RESET ---
     $("#reset").on("click", function() {
-        location.reload(); // Ricarica la pagina allo stato originale
+        location.reload();
     });
 
-});
+        // --- VARIABILI PER IL DISEGNO ---
+    let isDrawing = false;
+    let drawingActive = false;
+    let ctx;
+    const canvasContainer = document.getElementById('canvas');
+    let realCanvas;
 
+    // Funzione per inizializzare il piano di disegno
+    function setupDrawingCanvas() {
+        realCanvas = document.createElement('canvas');
+        // Impostiamo le dimensioni reali del canvas come quelle del div CSS (595x842)
+        realCanvas.width = 595; 
+        realCanvas.height = 842;
+        realCanvas.style.position = "absolute";
+        realCanvas.style.top = "0";
+        realCanvas.style.left = "0";
+        
+        canvasContainer.appendChild(realCanvas);
+        ctx = realCanvas.getContext('2d');
+
+        // Stile del tratto (Matita nera)
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+
+        // Eventi mouse sul canvas
+        $(realCanvas).on('mousedown', startDrawing);
+        $(realCanvas).on('mousemove', draw);
+        $(realCanvas).on('mouseup mouseleave', stopDrawing);
+    }
+
+    function startDrawing(e) {
+        if (!drawingActive) return;
+        isDrawing = true;
+        ctx.beginPath();
+        const rect = realCanvas.getBoundingClientRect();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function draw(e) {
+        if (!isDrawing || !drawingActive) return;
+        const rect = realCanvas.getBoundingClientRect();
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.stroke();
+    }
+
+    function stopDrawing() {
+        isDrawing = false;
+    }
+
+    // Inizializza il canvas subito
+    setupDrawingCanvas();
+
+
+
+
+});
 
 
 
