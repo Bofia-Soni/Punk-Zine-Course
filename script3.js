@@ -1,14 +1,27 @@
 $(document).ready(function() {
 
-    /* ---------- 1. CONFIGURAZIONE MODELLO E INTERACT ---------- */
-    const MM_PER_PX = 25.4 / 96; // Conversione pixel -> millimetri
-    let selectedId = null;
+    const MM_PER_PX = 25.4 / 96;
     let topZ = 1000;
-    const layout = {}; // Database degli oggetti presenti sullo schermo
+    const layout = {};
 
-    /**
-     * Registra l'elemento nel modello matematico e attiva l'interattività
-     */
+    // 1. FUNZIONE RENDER (Aggiorna lo stile visivo)
+    function render(el) {
+        const id = el.getAttribute('data-id');
+        const d = layout[id];
+        if (!d) return;
+
+        $(el).css({
+            'left': d.x + 'mm',
+            'top': d.y + 'mm',
+            'width': d.width + 'mm',
+            'height': d.height + 'mm',
+            'z-index': d.z,
+            'transform': 'rotate(' + d.rotation + 'deg)',
+            'position': 'absolute'
+        });
+    }
+
+    // 2. RENDERE INTERATTIVI GLI ASSET
     function makeInteractive($el) {
         let id = $el.attr('data-id');
         if (!id) {
@@ -16,28 +29,29 @@ $(document).ready(function() {
             $el.attr('data-id', id);
         }
 
-        // Se l'elemento non è nel database layout, lo aggiungiamo
+        // Se non esiste nel database, calcola posizione iniziale
         if (!layout[id]) {
             const pos = $el.position();
             layout[id] = {
                 x: pos.left * MM_PER_PX,
                 y: pos.top * MM_PER_PX,
-                width: ($el.width() || 150) * MM_PER_PX,
-                height: ($el.height() || 150) * MM_PER_PX,
-                rotation: (Math.random() * 10) - 5, // Rotazione punk iniziale
+                width: 40, // Larghezza standard in mm
+                height: 40, // Altezza standard in mm
+                rotation: (Math.random() * 10) - 5,
                 z: ++topZ
             };
         }
 
-        // Attiviamo le maniglie di ridimensionamento visive (jQuery UI)
+        // Applichiamo jQuery UI Resizable per lo STRETCH
         if (!$el.hasClass("ui-resizable")) {
             $el.resizable({
-                aspectRatio: true,
+                aspectRatio: false, // Permette ridimensionamento libero
                 handles: "all",
                 stop: function(event, ui) {
-                    // Sincronizziamo il modello dopo il ridimensionamento manuale
                     layout[id].width = ui.size.width * MM_PER_PX;
                     layout[id].height = ui.size.height * MM_PER_PX;
+                    layout[id].x = ui.position.left * MM_PER_PX;
+                    layout[id].y = ui.position.top * MM_PER_PX;
                     render($el[0]);
                 }
             });
@@ -46,23 +60,87 @@ $(document).ready(function() {
         render($el[0]);
     }
 
-    /**
-     * Applica le trasformazioni CSS basate sui millimetri e gradi
-     */
-    function render(el) {
-        const id = el.getAttribute('data-id');
-        const d = layout[id];
-        if (!d) return;
+    // 3. LOGICA DI TRASCINAMENTO (INTERACT.JS)
+    interact('.draggable-asset').draggable({
+        inertia: true,
+        modifiers: [
+            interact.modifiers.restrictRect({
+                restriction: 'parent', // Non far uscire l'immagine dall'area
+                endOnly: true
+            })
+        ],
+        listeners: {
+            move(event) {
+                const target = event.target;
+                const id = target.getAttribute('data-id');
+                if (!layout[id]) return;
 
-        el.style.left = d.x + 'mm';
-        el.style.top = d.y + 'mm';
-        el.style.width = d.width + 'mm';
-        el.style.height = d.height + 'mm';
-        el.style.transform = `rotate(${d.rotation}deg)`;
-        el.style.zIndex = d.z;
-    }
+                // Aggiorna le coordinate nel modello (convertendo il delta pixel in mm)
+                layout[id].x += event.dx * MM_PER_PX;
+                layout[id].y += event.dy * MM_PER_PX;
 
-    /* ---------- 2. GESTIONE DISEGNO (HAND DRAWINGS) ---------- */
+                render(target);
+            }
+        }
+    });
+
+    // 4. CLICK SULLE CATEGORIE
+    $(".category").on("click", function() {
+        const catId = $(this).attr("id");
+        const $overlay = $("#overlay_" + catId);
+        
+        $overlay.fadeIn().css("display", "block");
+
+        $overlay.find(".draggable-asset").each(function() {
+            const $img = $(this);
+            
+            // Posizionamento casuale iniziale se non sono già stati toccati
+            if (!$img.attr('data-id')) {
+                const rx = Math.random() * (window.innerWidth - 200);
+                const ry = Math.random() * (window.innerHeight - 200);
+                $img.css({ left: rx + "px", top: ry + "px" });
+            }
+
+            $img.css("pointer-events", "auto"); // Cruciale: riabilita i click
+            makeInteractive($img);
+        });
+
+        // Logiche speciali
+        if (catId === "drawings") {
+            drawingActive = true;
+            $("#canvas").addClass("active").css("pointer-events", "auto");
+            $("body").addClass("drawing-mode");
+        }
+    });
+
+    // 5. SELEZIONE E ROTAZIONE DA TASTIERA
+    $(document).on('mousedown', '.draggable-asset', function() {
+        $(".draggable-asset").removeClass('selected');
+        $(this).addClass('selected');
+        const id = $(this).attr('data-id');
+        layout[id].z = ++topZ;
+        render(this);
+    });
+
+    document.addEventListener('keydown', function(e) {
+        const $selected = $(".draggable-asset.selected");
+        if ($selected.length === 0) return;
+        
+        const id = $selected.attr('data-id');
+        if (e.key === 'ArrowLeft') layout[id].rotation -= 5;
+        if (e.key === 'ArrowRight') layout[id].rotation += 5;
+        
+        render($selected[0]);
+    });
+
+    // --- MANTIENI IL RESTO DEL TUO CODICE (Export PDF, Stelline, etc.) ---
+    // (Incolla qui sotto la tua logica di disegno su canvas e l'export PDF)
+    
+    // Esempio rapido Reset
+    $("#reset").on("click", function() { location.reload(); });
+});
+
+    /* ---------- 3. GESTIONE DISEGNO (HAND DRAWINGS) ---------- */
     let isDrawing = false;
     let drawingActive = false;
     let ctx;
@@ -72,7 +150,6 @@ $(document).ready(function() {
     function setupDrawingCanvas() {
         if (!canvasContainer) return;
         realCanvas = document.createElement('canvas');
-        // Dimensioni fisse per un foglio A4 a 72dpi circa (595x842px)
         realCanvas.width = 595; 
         realCanvas.height = 842;
         realCanvas.style.position = "absolute";
@@ -110,47 +187,22 @@ $(document).ready(function() {
     
     setupDrawingCanvas();
 
-    /* ---------- 3. LOGICA INTERACT.JS (DRAG & SELEZIONE) ---------- */
-    interact('.draggable-asset')
-        .draggable({
-            listeners: {
-                move(e) {
-                    const id = e.target.getAttribute('data-id');
-                    const d = layout[id];
-                    if (!d) return;
-
-                    const angle = d.rotation * Math.PI / 180;
-                    const dx = e.dx * MM_PER_PX;
-                    const dy = e.dy * MM_PER_PX;
-
-                    // Correzione del trascinamento in base alla rotazione dell'oggetto
-                    d.x += dx * Math.cos(angle) + dy * Math.sin(angle);
-                    d.y += -dx * Math.sin(angle) + dy * Math.cos(angle);
-
-                    render(e.target);
-                }
-            }
-        });
-
-    // Selezione dell'elemento al click
+    /* ---------- 4. SELEZIONE E ROTAZIONE ---------- */
     $(document).on('click', '.draggable-asset', function(e) {
         e.stopPropagation();
         selectedId = $(this).attr('data-id');
         $(".draggable-asset").removeClass('selected');
         $(this).addClass('selected');
         
-        // Porta in primo piano
         layout[selectedId].z = ++topZ;
         render(this);
     });
 
-    // Deseleziona cliccando sullo sfondo
     $(document).on('click', function() {
         selectedId = null;
         $(".draggable-asset").removeClass('selected');
     });
 
-    /* ---------- 4. ROTAZIONE DA TASTIERA ---------- */
     document.addEventListener('keydown', e => {
         if (!selectedId) return;
         const d = layout[selectedId];
@@ -169,7 +221,6 @@ $(document).ready(function() {
         
         $overlay.show();
 
-        // Sparpaglia le immagini
         const $assets = $overlay.find(".draggable-asset");
         $assets.each(function() {
             const $img = $(this);
@@ -186,7 +237,6 @@ $(document).ready(function() {
             makeInteractive($img);
         });
 
-        // Logiche specifiche per categoria
         if (id === "drawings") {
             drawingActive = true;
             $("body").addClass("drawing-mode");
@@ -203,7 +253,6 @@ $(document).ready(function() {
         }
     });
 
-    // Chiusura tab
     $(document).on("click", ".tab-img", function() {
         const $img = $(this);
         const $parentOverlay = $img.closest(".category-overlay");
@@ -215,9 +264,9 @@ $(document).ready(function() {
         });
     });
 
-    /* ---------- 6. STELLINE E PULSANTI EXTRA ---------- */
+    /* ---------- 6. STELLINE E RESET ---------- */
     $(document).on("click", function(e) {
-        if (!$(e.target).closest('.category, button, img, canvas').length) {
+        if (!$(e.target).closest('.category, button, img, canvas, .ui-resizable-handle').length) {
             const star = $('<img src="SOURCES/img/star.PNG" class="star">');
             star.css({ left: e.pageX - 15 + "px", top: e.pageY - 15 + "px" });
             $('body').append(star);
@@ -229,17 +278,15 @@ $(document).ready(function() {
         location.reload();
     });
 
-    /* ---------- 7. EXPORT PDF (HTML2CANVAS) ---------- */
+    /* ---------- 7. EXPORT PDF ---------- */
     $("#print").on("click", function() {
-        // Rimuoviamo il bordo di selezione prima dello scatto
         $(".selected").removeClass("selected");
 
-        // Usiamo html2canvas per fotografare l'intera pagina
         html2canvas(document.body, {
             useCORS: true,
             allowTaint: true,
             backgroundColor: $("body").css("background-color"),
-            scale: 2 // Alta qualità
+            scale: 2 
         }).then(canvas => {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -252,4 +299,3 @@ $(document).ready(function() {
             pdf.save("my_punk_zine.pdf");
         });
     });
-});
