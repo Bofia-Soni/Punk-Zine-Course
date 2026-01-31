@@ -64,7 +64,7 @@ $(document).ready(function() {
         }
 
         if(id === "illegible") {
-            $("body").css({ "font-family": "Mess_Light" });
+            $("body").css({ "font-family": "Mess_Light"});
         }
     });
 
