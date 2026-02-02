@@ -2,9 +2,16 @@ body {
   background: #ddd;
   font-family: system-ui, sans-serif;
 }
+.rightside{
+    position: fixed;
+    right: 1vw;
+    top: 0;
+}
 
 .toolbar {
-  margin: 10px;
+position: fixed;
+bottom: 2vh;
+right: 1vw;
 }
 
 .canvas {
@@ -12,12 +19,12 @@ body {
   width: 210mm;
   height: 297mm;
   background: white;
-  margin: 20px;
+  /* margin: 20px; */
   /* box-shadow: 0 0 20px rgba(0,0,0,.2); */
-  overflow: hidden;
+  overflow: visible;
 }
 
-.draggable-asset {
+.item {
   position: absolute;
   transform-origin: center center;
   cursor: grab;
@@ -25,11 +32,11 @@ body {
   
 }
 
-.draggable-asset.selected {
+.item.selected {
   outline: 2px solid #0077ff;
 }
 
-.draggable-asset:active {
+.item:active {
   cursor: grabbing;
 }
 
