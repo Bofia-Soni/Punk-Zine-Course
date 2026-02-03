@@ -317,8 +317,8 @@ button{
     position: fixed;
     right: 20px;
     top: 20px;
-    /* width: 595px;
-    height: 842px; */
+    width: 595px;
+    height: 842px;
     /* border: 1px solid black; */
     pointer-events: none;
     z-index: 1; 
@@ -331,8 +331,8 @@ button{
 
 .canvas {
   
-  width: 210mm;
-  height: 297mm;
+  /* width: 210mm;
+  height: 297mm; */
   background: white;
   margin: 20px;
   
